@@ -2,7 +2,7 @@
 export default {
   data() {
     return {
-      id: 92,
+      id: '',
       name: '',
       birth_year: null,
       joined_shelter_ts: null,
@@ -29,7 +29,7 @@ export default {
       const base64Index = this.previewImage.indexOf('base64,');
       const base64String = this.previewImage.substring(base64Index + 7);
       const cat = {
-        id: 92,
+        id: this.id,
         name: this.name,
         birth_year: parseInt(this.birth_year),
         joined_shelter_ts: parseInt(this.joined_shelter_ts),
@@ -41,12 +41,12 @@ export default {
       };
 
       try {
-        const response = await fetch('http://127.0.0.1:5000/cats', {
-          method: 'POST',
+        const response = await fetch(`http://127.0.0.1:5000/cats/${this.id}`, {
+          method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(cat),
         });
-        console.log('Cat added successfully');
+        console.log('Cat updated successfully');
       } catch (error) {
         console.error('Error:', error);
       }
@@ -59,6 +59,10 @@ export default {
   <div class="page-wrapper">
     <h1 class="cursive-font">Add a cat</h1>
     <main>
+        <div>
+        <label for="id">Id: </label>
+        <input v-model="id" type="text" id="id">
+      </div>
       <div>
         <label for="name">Name: </label>
         <input v-model="name" type="text" id="name">
@@ -93,6 +97,7 @@ export default {
       </div>
       <button @click="addCat">Add Cat</button>
       <a href="/admin"><button>Discard</button></a><br>
+      <img :src="previewImage" class="uploading-image" />
     </main>
   </div>
 </template>

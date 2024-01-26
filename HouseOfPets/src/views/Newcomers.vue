@@ -28,7 +28,9 @@
       </div>
     </li>
     <li>
-      <button>View all</button>
+      <a href="/cats">
+        <button>View all</button>
+      </a>
     </li>
 </ul>
 </template>
@@ -39,7 +41,7 @@
 }
 
 .newcomers-images {
-  width: 15vw;
+  width: 8vw;
 }
 
 .list {

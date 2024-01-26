@@ -1,12 +1,12 @@
 <template>
   <div>
     <TopBar></TopBar>
-    <p class="cursive-font">Name</p>
+    <p class="cursive-font">{{dog.name}}</p>
     <main class="profile">
       <img class="animal-profile-picture" src="./assets/dog1.png">
     </main>
     <div class="description-adopt-button">
-      <p>He is a sweet little boy who loves affection. Please adopt him.</p>
+      <p>{{ dog.description }}</p>
       <div class="button-box">
         <button class="adopt-button" @click="openAdoptionForm">Adopt</button>
       </div>
@@ -20,15 +20,16 @@
             <img src="./assets/houseOfPets.png" class="logo-image" id="logo-image">
           </div>
           <div class="form-content-personal-information">
-              <label for="name" id="name-label">Name:</label>
-              <input type="text" id="name-input" v-model="adoptForm.name" required>
+            <label for="name" id="name-label">Name:</label>
+            <input type="text" id="name-input" v-model="adoptForm.name" required>
 
-              <label for="address" id="address-label">Address:</label>
-              <input type="text" id="address-input" v-model="adoptForm.address" required>
+            <label for="address" id="address-label">Address:</label>
+            <input type="text" id="address-input" v-model="adoptForm.address" required>
 
-              <label for="contact" id="contact-label">Contact Number:</label>
-              <input type="text" id="contact-input" v-model="adoptForm.contact" required>
+            <label for="contact" id="contact-label">Contact Number:</label>
+            <input type="text" id="contact-input" v-model="adoptForm.contact" required>
             <button type="button" id="submit-button" @click="submitAdoptionForm">Submit</button>
+            <p id="information-paragraph">Enter your details and we will contact you soon!</p>
           </div>
         </form>
       </div>
@@ -41,7 +42,36 @@
 <script setup lang="ts">
 import TopBar from './views/TopBar.vue'
 import Footer from './components/Footer.vue'
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import emailjs from 'emailjs-com';
+
+const dog = ref({
+  name: '',
+  picture: '',
+  description: ''
+});
+
+const $route = useRoute();
+
+onMounted(() => {
+  const animalId = $route.params.id;
+  fetchAnimalDetails(animalId);
+});
+
+const fetchAnimalDetails = async (animalId) => {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/dog/${animalId}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    dog.value = data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
 
 const showAdoptionForm = ref(false);
 const adoptForm = reactive({
@@ -59,7 +89,20 @@ const closeAdoptionForm = () => {
 };
 
 const submitAdoptionForm = () => {
-  closeAdoptionForm();
+  const templateParams = {
+    from_name: adoptForm.name,
+    to_name: 'andreeabrindea61@gmail.com',
+    message: `We got a new adoption request for ${dog.value.name}. Please contact ${adoptForm.contact} for more information. The person is located in ${adoptForm.address}.`,
+  };
+
+  emailjs.send('service_gdduyno', 'template_e1ae25s', templateParams, 'cPo-DvXcmQTUcWCat')
+    .then((response) => {
+      console.log('Email sent successfully:', response);
+      closeAdoptionForm();
+    })
+    .catch((error) => {
+      console.error('Error sending email:', error);
+    });
 };
 </script>
 
@@ -69,23 +112,23 @@ const submitAdoptionForm = () => {
 }
 
 .profile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .animal-profile-picture {
-   width: 50%;
+  width: 50%;
 }
 
 .cursive-font {
-    font-family: 'Snell Roundhand', cursive;
-    margin-left: 8vw;
-    font-size: 40px;
-  }
+  font-family: 'Snell Roundhand', cursive;
+  margin-left: 8vw;
+  font-size: 40px;
+}
 
 .description-adopt-button {
-    margin-left: 8vw;
+  margin-left: 8vw;
 }
 
 .adopt-button {
@@ -97,7 +140,7 @@ const submitAdoptionForm = () => {
   width: 6em;
 }
 
-.adopt-button:hover{
+.adopt-button:hover {
   background-color: #EED5B7;
 }
 
@@ -116,7 +159,7 @@ const submitAdoptionForm = () => {
 
 @media (max-width: 768px) {
   .popup-content {
-    max-width: 100%; 
+    max-width: 100%;
     padding: 8px;
   }
 
@@ -124,13 +167,24 @@ const submitAdoptionForm = () => {
     height: 50px;
   }
 
-  #name-label, #name-input, #address-label, #address-input, #contact-label, #contact-input, #close-button, #submit-button {
+  #name-label,
+  #name-input,
+  #address-label,
+  #address-input,
+  #contact-label,
+  #contact-input,
+  #close-button,
+  #submit-button {
     font-size: 12px;
   }
 
   .form-content {
     display: flex;
     flex-direction: column;
+  }
+
+  #information-paragraph {
+    font-size: 12px;
   }
 
 }
@@ -150,13 +204,12 @@ const submitAdoptionForm = () => {
   height: 200px;
 }
 
-.form-content{
+.form-content {
   display: flex;
   flex-direction: row;
 }
 
-.form-content-personal-information
-{
+.form-content-personal-information {
   display: flex;
   flex-direction: column;
   margin-right: 2vw;
@@ -182,9 +235,15 @@ const submitAdoptionForm = () => {
   width: 6em;
   margin-top: 2vh;
   align-self: center;
+  margin-bottom: 2vh;
 }
 
 #submit-button:hover {
   background-color: #E8A444;
+}
+
+#information-paragraph {
+  color: gray;
+  margin-bottom: 2vh;
 }
 </style>

@@ -62,42 +62,44 @@
         <button class="search-dog-button">Search</button>
     </header>
     <main>
-    <ul id="list-dogs">
-      <li class="list">
-          <div class="photo-background">
-            <img class="dogs-images" src="./assets/cat1.png">
-            <p>Luna</p>
-          </div>
+      <ul id="list-dogs">
+        <li class="list" v-for="dog in dogs" :key="dog.id">
+            <div class="photo-background">
+                <img v-if="dog.photo" class="dogs-images" :src="dog.photo" alt="Dog Photo">
+                <p>{{ dog.name }}</p>
+            </div>
         </li>
-        <li class="list">
-          <div class="photo-background">
-            <img class="dogs-images" src="./assets/dog1.png">
-            <p>Rex</p>
-          </div>
-        </li>
-        <li class="list">
-          <div class="photo-background">
-            <img class="dogs-images" src="./assets/cat2.png">
-            <p>Mau</p>
-          </div>
-        </li>
-        <li class="list">
-          <div class="photo-background">
-            <img class="dogs-images" src="./assets/dog2.png">
-            <p>Lucky</p>
-          </div>
-        </li>
-        <li class="list">
-          <div class="photo-background">
-            <img class="dogs-images" src="./assets/dogman.png">
-            <p>Lucian</p>
-          </div>
-        </li> 
     </ul>
     </main>
     </template>
-<script setup lang="ts">
-import TopBar from './views/TopBar.vue'
+<script lang="ts">
+import TopBar from './views/TopBar.vue';
+
+export default {
+  components: {
+    TopBar,
+  },
+  data() {
+    return {
+      dogs: [],
+    };
+  },
+  mounted() {
+    fetch('http://127.0.0.1:5000/dogs')
+      .then(response => response.json())
+      .then(data => {
+        this.dogs = data.map(dog => {
+          dog.photo = `data:image/jpeg;base64,${dog.photo}`;
+
+          return dog;
+        });
+        console.log(this.dogs);
+      })
+      .catch(error => {
+        console.error('Error fetching dogs data:', error);
+      });
+  },
+};
 </script>
 <style>
 .dogs-header {

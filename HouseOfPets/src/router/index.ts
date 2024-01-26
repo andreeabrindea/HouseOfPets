@@ -42,9 +42,47 @@ const router = createRouter({
       component: () => import('../views/AddCat.vue')
     },
     {
-      path: '/animal',
+      path: '/animal/:id',
       name: 'animal',
-      component: () => import('../AnimalSinglePage.vue')
+      component: () => import('../AnimalSinglePage.vue'),
+      props: true,
+    },
+    {
+      path: '/cat/:id',
+      name: 'cat',
+      component: () => import('../SingleCat.vue')
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../Login.vue')
+    },
+
+    {
+      path: '/admin',
+      name: 'admin',
+      component: () => import('../Admin.vue')
+    },
+
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('../Register.vue')
+    },
+    {
+      path: '/add-dog',
+      name: 'add-dog',
+      component: () => import('../views/AddDog.vue')
+    },
+    {
+      path: '/update-dog',
+      name: 'update-dog',
+      component: () => import('../views/UpdateDog.vue')
+    },
+    {
+      path: '/update-cat',
+      name: 'update-cat',
+      component: () => import('../views/UpdateCat.vue')
     },
   ]
 })

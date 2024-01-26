@@ -114,8 +114,8 @@
   }
 
   .newcomers-images {
-    width: 96%;
-    margin-left: 16vw;
+    width: 100%;
+    margin-left: 20vw;
   }
 
   </style>
